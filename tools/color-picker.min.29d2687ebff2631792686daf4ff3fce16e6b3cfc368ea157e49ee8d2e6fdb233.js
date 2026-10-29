@@ -1,1 +1,0 @@
-(function(){"use strict";function e(){if(typeof AColorPicker=="undefined")return;var e=document.querySelectorAll(".color-picker-page .filled-logo");AColorPicker.from(".color-picker-page .picker").on("change",function(t,n){e.forEach(function(e){e.style.fill=n})})}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",e):e()})()
