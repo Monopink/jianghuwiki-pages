@@ -1,0 +1,1 @@
+const menuControl=document.querySelector("#menu-control");if(menuControl){const e=()=>{document.body.classList.toggle("menu-open",menuControl.checked)};menuControl.addEventListener("change",e),e()}
