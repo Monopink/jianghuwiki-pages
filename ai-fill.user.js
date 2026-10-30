@@ -3,8 +3,8 @@
 // @namespace    https://www.jhwiki.com/
 // @version      1.0.0
 // @description  Fill AI chat inputs from the q URL parameter without sending
-// @downloadURL  https://www.jhwiki.com/strange-book-ai-fill.user.js
-// @updateURL    https://www.jhwiki.com/strange-book-ai-fill.user.js
+// @downloadURL  https://www.jhwiki.com/ai-fill.user.js
+// @updateURL    https://www.jhwiki.com/ai-fill.user.js
 // @match        https://www.kimi.ai/*
 // @match        https://kimi.ai/*
 // @match        https://chat.qwen.ai/*
@@ -23,8 +23,8 @@
 
   const site = window.location.hostname;
   const selectors = {
-    "www.kimi.ai": '[data-testid="chat-editor"] [role="textbox"]',
-    "kimi.ai": '[data-testid="chat-editor"] [role="textbox"]',
+    "www.kimi.ai": '.chat-input-editor[data-lexical-editor="true"][role="textbox"]',
+    "kimi.ai": '.chat-input-editor[data-lexical-editor="true"][role="textbox"]',
     "chat.qwen.ai": "textarea.message-input-textarea",
     "www.dola.com": '[data-testid="chat_input_input"] .tiptap.ProseMirror',
     "www.doubao.com": '[data-testid="chat_input_input"] .tiptap.ProseMirror',
@@ -52,16 +52,37 @@
   function fillEditable(element) {
     element.focus();
 
-    const selection = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(element);
-    selection.removeAllRanges();
-    selection.addRange(range);
+    function selectContents() {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
 
-    if (!document.execCommand("insertText", false, prompt)) {
+    selectContents();
+
+    const inserted = document.execCommand("insertText", false, prompt);
+    const currentText = element.textContent || "";
+    if (inserted && currentText.includes(prompt)) {
+      emit(element, "change");
+      return;
+    }
+
+    // Lexical-based editors handle a real paste event more reliably than DOM changes.
+    selectContents();
+    if (typeof DataTransfer !== "undefined" && typeof ClipboardEvent !== "undefined") {
+      const transfer = new DataTransfer();
+      transfer.setData("text/plain", prompt);
+      element.dispatchEvent(new ClipboardEvent("paste", {
+        bubbles: true,
+        clipboardData: transfer
+      }));
+    } else {
       element.replaceChildren(document.createTextNode(prompt));
       emit(element, "input");
     }
+
     emit(element, "change");
   }
 
