@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Strange Book AI prompt filler
+// @name         Jianghu Wiki AI prompt filler
 // @namespace    https://www.jhwiki.com/
 // @version      1.0.0
 // @description  Fill AI chat inputs from the q URL parameter without sending
