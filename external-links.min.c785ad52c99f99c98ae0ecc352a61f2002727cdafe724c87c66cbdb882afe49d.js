@@ -1,0 +1,1 @@
+document.querySelectorAll("a[href]").forEach(e=>{const t=new URL(e.href,window.location.href);if(!/^https?:$/.test(t.protocol))return;if(t.origin===window.location.origin){e.removeAttribute("target");return}e.target="_blank",e.rel="noopener noreferrer"})
